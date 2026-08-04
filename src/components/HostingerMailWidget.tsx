@@ -29,6 +29,7 @@ export default function HostingerMailWidget() {
     emails: HostingerEmail[];
     error?: string;
   } | null>(null);
+  console.log("data", data);
   
   const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);

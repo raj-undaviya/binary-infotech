@@ -4,8 +4,11 @@ import { ImapFlow } from "imapflow";
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const email = process.env.HOSTINGER_EMAIL || "info@binaries.org.in";
+  const email = process.env.HOSTINGER_EMAIL;
   const password = process.env.HOSTINGER_PASSWORD;
+  console.log("email", email);
+  console.log("password", password);
+  
 
   if (!password) {
     return NextResponse.json({
@@ -21,8 +24,8 @@ export async function GET() {
     port: 993,
     secure: true,
     auth: {
-      user: email,
-      pass: password
+      user: email || "info@binaries.org.in",
+      pass: password as string
     },
     logger: false
   });

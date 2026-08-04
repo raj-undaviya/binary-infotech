@@ -496,32 +496,73 @@ export default function AdminContactsInbox({ initialContacts }: { initialContact
 
             {/* Message Body Content */}
             <div className="p-6 sm:p-8 flex-grow overflow-y-auto space-y-6">
+              {/* Subject Line */}
               <div>
-                <h2 className="text-base sm:text-lg font-extrabold text-foreground mb-2 leading-tight">
+                <h2 className="text-base sm:text-lg font-extrabold text-foreground mb-4 leading-tight">
                   {selectedContact.subject}
                 </h2>
                 
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-border/40 pb-4 text-[10px] sm:text-xs text-muted font-semibold">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-extrabold text-foreground">{selectedContact.name}</span>
-                    <span>&lt;{selectedContact.email}&gt;</span>
+                {/* Sender Info Block (Gmail/Superhuman Style) */}
+                <div className="flex items-start justify-between gap-4 border-b border-border/30 pb-5">
+                  <div className="flex items-center gap-3">
+                    {/* Avatar */}
+                    {(() => {
+                      const initial = selectedContact.name ? selectedContact.name.charAt(0).toUpperCase() : "U";
+                      const colors = [
+                        "from-blue-500 to-indigo-600",
+                        "from-emerald-500 to-teal-600",
+                        "from-rose-500 to-pink-600",
+                        "from-amber-500 to-orange-600",
+                        "from-purple-500 to-violet-600",
+                        "from-cyan-500 to-blue-600"
+                      ];
+                      const colorIndex = selectedContact.name.charCodeAt(0) % colors.length;
+                      const avatarColor = colors[colorIndex];
+                      return (
+                        <div className={`h-10 w-10 rounded-full bg-gradient-to-tr ${avatarColor} flex items-center justify-center text-white text-sm font-black shadow-sm select-none`}>
+                          {initial}
+                        </div>
+                      );
+                    })()}
                     
-                    {selectedContact.sourceType === "hostinger" ? (
-                      <span className="px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-500 font-extrabold tracking-wider text-[8px]">
-                        Hostinger Mail Inbox
-                      </span>
-                    ) : (
-                      <span className="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500 font-extrabold tracking-wider text-[8px]">
-                        Website Contact Form
-                      </span>
-                    )}
+                    {/* Name & Recipient */}
+                    <div className="space-y-0.5">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-extrabold text-foreground text-xs sm:text-sm">{selectedContact.name}</span>
+                        <span className="text-[10px] sm:text-xs text-muted font-semibold">&lt;{selectedContact.email}&gt;</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
+                        <span className="text-[9px] text-muted font-bold">to me</span>
+                        {selectedContact.sourceType === "hostinger" ? (
+                          <span className="px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-500 font-extrabold tracking-wider text-[8px] border border-blue-500/10">
+                            Hostinger Mail
+                          </span>
+                        ) : (
+                          <span className="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500 font-extrabold tracking-wider text-[8px] border border-emerald-500/10">
+                            Website Form
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  <span>Received {new Date(selectedContact.date).toLocaleString()}</span>
+
+                  {/* Timestamp */}
+                  <span className="text-[10px] text-muted font-bold whitespace-nowrap pt-1">
+                    {new Date(selectedContact.date).toLocaleString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: true
+                    })}
+                  </span>
                 </div>
               </div>
 
-              {/* Message text */}
-              <div className="text-foreground text-xs sm:text-sm leading-relaxed whitespace-pre-line bg-surface/50 border border-border/40 rounded-2xl p-5 font-semibold">
+              {/* Message body - clean text container */}
+              <div className="text-foreground/90 text-xs sm:text-sm leading-relaxed whitespace-pre-wrap break-words bg-surface/30 dark:bg-background/20 border border-border/20 rounded-2xl p-6 font-medium shadow-sm">
                 {selectedContact.message}
               </div>
 

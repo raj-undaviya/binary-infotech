@@ -98,7 +98,7 @@ export default function HostingerMailWidget() {
       {/* Popover/Modal Drawer */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-          <div className="relative w-full max-w-lg bg-surface border border-border rounded-3xl p-6 sm:p-8 shadow-2xl overflow-hidden max-h-[85vh] flex flex-col">
+          <div className="relative w-full max-w-2xl bg-white dark:bg-slate-900 border border-border rounded-3xl p-6 sm:p-8 shadow-2xl overflow-hidden max-h-[85vh] flex flex-col">
             
             {/* Background design glow */}
             <div className="absolute top-0 right-0 w-36 h-36 bg-accent/5 rounded-full filter blur-[50px] pointer-events-none" />

@@ -25,7 +25,7 @@ export async function POST(req: Request) {
       }, { status: 400 });
     }
 
-    // Configure Hostinger SMTP transport
+    // Configure Hostinger SMTP transport with serverless timeout options
     const transporter = nodemailer.createTransport({
       host: "smtp.hostinger.com",
       port: 465,
@@ -33,7 +33,9 @@ export async function POST(req: Request) {
       auth: {
         user: email || "info@binaries.org.in",
         pass: password as string
-      }
+      },
+      connectionTimeout: 10000,
+      socketTimeout: 10000
     });
 
     // Send mail

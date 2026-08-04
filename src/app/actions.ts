@@ -60,7 +60,9 @@ export async function submitContactForm(prevState: any, formData: FormData) {
           auth: {
             user: hostingerEmail,
             pass: hostingerPassword
-          }
+          },
+          connectionTimeout: 10000,
+          socketTimeout: 10000
         });
 
         const mailContent = `You have received a new contact form inquiry from your website:

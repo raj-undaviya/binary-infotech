@@ -111,6 +111,21 @@ export default function AdminContactsInbox({ initialContacts }: { initialContact
       setContacts(prev =>
         prev.map(c => (c.id === id ? { ...c, read: !currentRead } : c))
       );
+
+      // If we are marking as read (switching from unread to read), sync it back to Hostinger IMAP
+      if (!currentRead) {
+        try {
+          await fetch("/api/admin/emails", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ id }),
+          });
+        } catch (err) {
+          console.error("Failed to sync read status to Hostinger IMAP:", err);
+        }
+      }
       return;
     }
 

@@ -4,6 +4,7 @@ import { simpleParser } from "mailparser";
 
 export const dynamic = 'force-dynamic';
 
+// GET: Fetch recent emails (both read & unread)
 export async function GET() {
   const email = process.env.HOSTINGER_EMAIL || "info@binaries.org.in";
   const password = process.env.HOSTINGER_PASSWORD;
@@ -33,37 +34,45 @@ export async function GET() {
     
     // Select Inbox
     const lock = await client.getMailboxLock("INBOX");
-    let count = 0;
-    const unseenEmails: any[] = [];
+    let unreadCount = 0;
+    const inboxEmails: any[] = [];
     
     try {
-      // Find unseen (un-read) emails using seen: false
-      const messages = await client.search({ seen: false });
+      // 1. Get total unread count for notifications
+      const unseenMessages = await client.search({ seen: false });
+      if (unseenMessages && Array.isArray(unseenMessages)) {
+        unreadCount = unseenMessages.length;
+      }
+
+      // 2. Fetch both read & unread messages for the inbox feed
+      const allMessages = await client.search({ all: true });
       
-      if (messages && Array.isArray(messages)) {
-        count = messages.length;
-        
-        // Fetch details of the latest 10 unseen messages
-        if (count > 0) {
-          const latestIds = messages.slice(-10).reverse();
+      if (allMessages && Array.isArray(allMessages)) {
+        // Fetch details of the latest 15 messages (both read and unread)
+        if (allMessages.length > 0) {
+          const latestIds = allMessages.slice(-15).reverse();
+          
           for (const uid of latestIds) {
-            // Fetch envelope and raw message source
-            const message = await client.fetchOne(uid, { envelope: true, source: true });
+            // Fetch envelope, flags, and raw message source
+            const message = await client.fetchOne(uid, { envelope: true, source: true, flags: true });
             
             if (message && message.source && message.envelope) {
-              // Parse raw email source to extract clean body text
+              // Parse raw email source to extract body text
               const parsed = await simpleParser(message.source);
               const bodyText = parsed.text || (parsed.html ? parsed.html.replace(/<[^>]*>/g, '') : "(No Message Content)");
 
-              unseenEmails.push({
-                id: `hostinger-${uid}`, // unique ID for client merge
+              // Determine if mail has been read (has the \Seen flag)
+              const isRead = message.flags ? message.flags.has('\\Seen') : false;
+
+              inboxEmails.push({
+                id: `hostinger-${uid}`, // unique ID for merging
                 name: message.envelope.from?.map((f: any) => f.name || f.address.split('@')[0]).join(", ") || "Unknown Sender",
                 email: message.envelope.from?.map((f: any) => f.address).join(", ") || "",
                 subject: message.envelope.subject || "(No Subject)",
                 message: bodyText.trim(),
                 date: message.envelope.date ? message.envelope.date.toISOString() : new Date().toISOString(),
-                read: false,
-                sourceType: "hostinger" // to differentiate in UI
+                read: isRead,
+                sourceType: "hostinger"
               });
             }
           }
@@ -78,8 +87,8 @@ export async function GET() {
     return NextResponse.json({
       status: "SUCCESS",
       email,
-      count,
-      emails: unseenEmails
+      count: unreadCount,
+      emails: inboxEmails
     });
   } catch (error: any) {
     console.error("Hostinger IMAP connection failed:", error);
@@ -90,5 +99,53 @@ export async function GET() {
       count: 0,
       emails: []
     }, { status: 500 });
+  }
+}
+
+// POST: Mark an email as read on Hostinger IMAP
+export async function POST(req: Request) {
+  try {
+    const { id } = await req.json();
+    if (!id || !id.startsWith("hostinger-")) {
+      return NextResponse.json({ success: false, error: "Invalid Hostinger message ID" }, { status: 400 });
+    }
+
+    const email = process.env.HOSTINGER_EMAIL || "info@binaries.org.in";
+    const password = process.env.HOSTINGER_PASSWORD;
+
+    if (!password) {
+      return NextResponse.json({ success: false, error: "SMTP/IMAP credentials not configured" }, { status: 400 });
+    }
+
+    const uid = parseInt(id.replace("hostinger-", ""), 10);
+    if (isNaN(uid)) {
+      return NextResponse.json({ success: false, error: "Invalid message UID" }, { status: 400 });
+    }
+
+    const client = new ImapFlow({
+      host: "imap.hostinger.com",
+      port: 993,
+      secure: true,
+      auth: {
+        user: email || "info@binaries.org.in",
+        pass: password as string
+      },
+      logger: false
+    });
+
+    await client.connect();
+    const lock = await client.getMailboxLock("INBOX");
+    try {
+      // Add \Seen flag to mark it as read in Hostinger IMAP
+      await client.messageFlagsAdd(uid, ["\\Seen"]);
+    } finally {
+      lock.release();
+    }
+    await client.logout();
+
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    console.error("Failed to mark message as read in IMAP:", error);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }

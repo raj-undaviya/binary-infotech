@@ -125,26 +125,7 @@
       "icon": "TrendingUp"
     }
   ],
-  "contacts": [
-    {
-      "id": "contact-1",
-      "name": "Sarah Thompson",
-      "email": "sarah.t@greentech.com",
-      "subject": "Inquiry regarding custom SaaS portal",
-      "message": "Hello, we are looking for a reliable software partner to rebuild our web platform in Next.js and optimize our site's SEO. We would love to hop on a call to discuss options and get a pricing estimate. Thank you!",
-      "date": "2026-08-01T10:30:00.000Z",
-      "read": true
-    },
-    {
-      "id": "contact-2",
-      "name": "Michael Carter",
-      "email": "m.carter@urbanstyle.co",
-      "subject": "Mobile app developers needed",
-      "message": "Hi Binary Infotech team! We are launching an e-commerce clothing app and need cross-platform app developers using React Native. Do you have portfolios of previous apps you can share?",
-      "date": "2026-07-28T14:15:00.000Z",
-      "read": true
-    }
-  ],
+  "contacts": [],
   "settings": {
     "siteTitle": "Binary Infotech",
     "siteTagline": "Engineering Digital Excellence",

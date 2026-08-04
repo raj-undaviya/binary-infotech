@@ -50,7 +50,7 @@ export async function GET() {
       if (allMessages && Array.isArray(allMessages)) {
         // Fetch details of the latest 15 messages (both read and unread)
         if (allMessages.length > 0) {
-          const latestIds = allMessages.slice(-15).reverse();
+          const latestIds = allMessages.reverse();
           
           for (const uid of latestIds) {
             // Fetch envelope, flags, and raw message source

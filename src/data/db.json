@@ -125,7 +125,17 @@
       "icon": "TrendingUp"
     }
   ],
-  "contacts": [],
+  "contacts": [
+    {
+      "name": "Raj",
+      "email": "undaviyaraj2000@gmail.com",
+      "subject": "This is the test mail from local",
+      "message": ".dvbslhvbsvsvbsbvhvs",
+      "id": "contact-1785880466199",
+      "date": "2026-08-04T21:54:26.199Z",
+      "read": true
+    }
+  ],
   "settings": {
     "siteTitle": "Binary Infotech",
     "siteTagline": "Engineering Digital Excellence",

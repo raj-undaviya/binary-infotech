@@ -46,7 +46,7 @@ export default async function AdminLayout({
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-highlight/5 rounded-full filter blur-[120px] pointer-events-none" />
 
       {/* Admin Sidebar */}
-      <aside className="w-full md:w-64 h-auto md:h-full bg-surface/85 backdrop-blur-md border-b md:border-b-0 md:border-r border-border p-6 flex flex-col relative z-10 overflow-y-auto shrink-0">
+      <aside className="w-full md:w-64 h-auto md:h-full bg-surface border-b md:border-b-0 md:border-r border-border p-6 flex flex-col relative z-10 overflow-y-auto shrink-0">
         
         {/* Sidebar Brand Header */}
         <div className="flex items-center justify-center">

@@ -20,7 +20,7 @@
       "date": "2025-12-10",
       "category": "Mobile App Development",
       "author": "Admin",
-      "views": 189
+      "views": 191
     },
     {
       "id": "post-3",
@@ -133,7 +133,7 @@
       "subject": "Inquiry regarding custom SaaS portal",
       "message": "Hello, we are looking for a reliable software partner to rebuild our web platform in Next.js and optimize our site's SEO. We would love to hop on a call to discuss options and get a pricing estimate. Thank you!",
       "date": "2026-08-01T10:30:00.000Z",
-      "read": false
+      "read": true
     },
     {
       "id": "contact-2",

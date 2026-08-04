@@ -1,7 +1,18 @@
 import { getPostBySlug, getPosts } from "@/lib/db";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Calendar, User, ArrowLeft, ArrowRight, Eye, Clock } from "lucide-react";
+import { 
+  Calendar, 
+  User, 
+  ArrowLeft, 
+  ArrowRight, 
+  Eye, 
+  Clock, 
+  Code, 
+  Smartphone, 
+  Layers, 
+  TrendingUp 
+} from "lucide-react";
 import Card from "@/components/design-system/Card";
 
 interface BlogPostPageProps {
@@ -17,6 +28,41 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
     title: post.title,
     description: post.summary,
   };
+}
+
+const categoryVisuals: Record<string, { gradient: string; icon: any }> = {
+  "digital marketing": { gradient: "from-[#06b6d4] to-[#3b82f6]", icon: TrendingUp },
+  "mobile app-development": { gradient: "from-[#ec4899] to-[#8b5cf6]", icon: Smartphone },
+  "web design services": { gradient: "from-[#f59e0b] to-[#ec4899]", icon: Layers },
+  "web development": { gradient: "from-[#10b981] to-[#06b6d4]", icon: Code },
+  "default": { gradient: "from-accent to-secondary", icon: Code }
+};
+
+function BlogCardImage({ category }: { category: string }) {
+  const normCategory = category.toLowerCase();
+  let config = categoryVisuals[normCategory] || categoryVisuals["default"];
+  if (normCategory.includes("marketing")) config = categoryVisuals["digital marketing"];
+  if (normCategory.includes("mobile") || normCategory.includes("app")) config = categoryVisuals["mobile app-development"];
+  if (normCategory.includes("design") || normCategory.includes("ui")) config = categoryVisuals["web design services"];
+  if (normCategory.includes("development") || normCategory.includes("web")) config = categoryVisuals["web development"];
+
+  const Icon = config.icon;
+
+  return (
+    <div className={`w-full h-full bg-gradient-to-br ${config.gradient} flex items-center justify-center relative overflow-hidden`}>
+      {/* Grid mesh overlay */}
+      <div className="absolute inset-0 grid-bg-pattern opacity-10 pointer-events-none" />
+      
+      {/* Decorative ambient center orb */}
+      <div className="absolute w-40 h-40 bg-white/10 rounded-full filter blur-2xl pointer-events-none" />
+
+      {/* Floating design elements */}
+      <div className="absolute top-8 left-8 w-2 h-2 rounded-full bg-white/30 animate-pulse" />
+      <div className="absolute bottom-10 right-12 w-3 h-3 rounded-full bg-white/20 animate-pulse" style={{ animationDelay: "1s" }} />
+
+      <Icon className="h-16 w-16 text-white drop-shadow-[0_4px_16px_rgba(255,255,255,0.35)] relative z-10" />
+    </div>
+  );
 }
 
 // A simple Markdown to JSX parser for safe server-side rendering
@@ -126,8 +172,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </Link>
 
         {/* Article Layout */}
-        <Card variant="default" className="p-6 sm:p-10 border border-border/80 bg-surface/50 backdrop-blur-sm mb-12 shadow-sm">
+        <Card variant="default" className="p-6 sm:p-10 border border-border/80 bg-surface/50 backdrop-blur-sm mb-12 shadow-sm overflow-hidden">
           
+          {/* Bleed-out Blog Header Banner */}
+          <div className="h-48 sm:h-72 w-full overflow-hidden rounded-t-2xl border-b border-border/60 -mt-6 sm:-mt-10 -mx-6 sm:-mx-10 mb-8">
+            <BlogCardImage category={post.category} />
+          </div>
+
           {/* Header Info */}
           <div className="border-b border-border/40 pb-6 mb-8">
             <span className="px-3 py-1 rounded bg-accent/15 text-accent text-xs font-extrabold uppercase tracking-widest">

@@ -1,12 +1,57 @@
 import Link from "next/link";
 import { getPosts } from "@/lib/db";
-import { Calendar, User, Search, BookOpen, Layers, ArrowRight, Code } from "lucide-react";
+import { 
+  Calendar, 
+  User, 
+  Search, 
+  BookOpen, 
+  Layers, 
+  ArrowRight, 
+  Code, 
+  Smartphone, 
+  TrendingUp 
+} from "lucide-react";
 import Card from "@/components/design-system/Card";
 
 export const metadata = {
   title: "Blog & Insights | Binary Infotech",
   description: "Stay updated with the latest software trends, SEO tips, mobile app strategies, and design tips from Binary Infotech.",
 };
+
+const categoryVisuals: Record<string, { gradient: string; icon: any }> = {
+  "digital marketing": { gradient: "from-[#06b6d4] to-[#3b82f6]", icon: TrendingUp },
+  "mobile app-development": { gradient: "from-[#ec4899] to-[#8b5cf6]", icon: Smartphone },
+  "web design services": { gradient: "from-[#f59e0b] to-[#ec4899]", icon: Layers },
+  "web development": { gradient: "from-[#10b981] to-[#06b6d4]", icon: Code },
+  "default": { gradient: "from-accent to-secondary", icon: Code }
+};
+
+function BlogCardImage({ category }: { category: string }) {
+  const normCategory = category.toLowerCase();
+  let config = categoryVisuals[normCategory] || categoryVisuals["default"];
+  if (normCategory.includes("marketing")) config = categoryVisuals["digital marketing"];
+  if (normCategory.includes("mobile") || normCategory.includes("app")) config = categoryVisuals["mobile app-development"];
+  if (normCategory.includes("design") || normCategory.includes("ui")) config = categoryVisuals["web design services"];
+  if (normCategory.includes("development") || normCategory.includes("web")) config = categoryVisuals["web development"];
+
+  const Icon = config.icon;
+
+  return (
+    <div className={`w-full h-full bg-gradient-to-br ${config.gradient} flex items-center justify-center relative overflow-hidden group/img`}>
+      {/* Grid mesh overlay */}
+      <div className="absolute inset-0 grid-bg-pattern opacity-15 pointer-events-none" />
+      
+      {/* Decorative ambient center orb */}
+      <div className="absolute w-24 h-24 bg-white/10 rounded-full filter blur-xl pointer-events-none" />
+
+      {/* Floating design elements */}
+      <div className="absolute top-4 left-4 w-1.5 h-1.5 rounded-full bg-white/30 animate-pulse" />
+      <div className="absolute bottom-6 right-8 w-2 h-2 rounded-full bg-white/20 animate-pulse" style={{ animationDelay: "1s" }} />
+
+      <Icon className="h-12 w-12 text-white drop-shadow-[0_4px_12px_rgba(255,255,255,0.3)] group-hover/img:scale-110 group-hover/img:rotate-3 transition-transform duration-300 relative z-10" />
+    </div>
+  );
+}
 
 export default async function BlogPage({
   searchParams,
@@ -75,10 +120,9 @@ export default async function BlogPage({
                   key={post.id}
                   className="bg-surface/50 border border-border/80 rounded-2xl overflow-hidden flex flex-col md:flex-row group hover:border-accent/40 transition-all duration-300 h-full md:h-64 shadow-sm"
                 >
-                  {/* Image/Visual wrapper */}
-                  <div className="md:w-1/3 bg-background flex items-center justify-center border-b md:border-b-0 md:border-r border-border min-h-[180px] relative overflow-hidden flex-shrink-0">
-                    <div className="absolute inset-0 bg-accent/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <Code className="h-10 w-10 text-accent group-hover:scale-110 transition-transform duration-300" />
+                  {/* Visual card header image */}
+                  <div className="md:w-1/3 border-b md:border-b-0 md:border-r border-border min-h-[180px] relative overflow-hidden flex-shrink-0">
+                    <BlogCardImage category={post.category} />
                   </div>
 
                   {/* Text Content */}

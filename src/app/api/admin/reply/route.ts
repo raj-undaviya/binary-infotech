@@ -14,6 +14,7 @@ export async function POST(req: Request) {
       }, { status: 400 });
     }
 
+    const cleanTo = to.trim();
     const email = process.env.HOSTINGER_EMAIL || "info@binaries.org.in";
     const password = process.env.HOSTINGER_PASSWORD;
 
@@ -38,7 +39,7 @@ export async function POST(req: Request) {
     // Send mail
     await transporter.sendMail({
       from: `"Binary Infotech" <${email}>`,
-      to,
+      to: cleanTo,
       subject,
       text: body,
       replyTo: email
@@ -46,7 +47,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
-      message: `Reply sent successfully to ${to}`
+      message: `Reply sent successfully to ${cleanTo}`
     });
 
   } catch (error: any) {

@@ -369,7 +369,7 @@ export default function InteractiveTimeline() {
                 <div className="p-4 rounded-2xl bg-accent text-white shadow-xl shadow-accent/20 flex items-center justify-center">
                   <Database className="h-7 w-7" />
                 </div>
-                <span className="text-[8px] font-mono text-accent font-bold uppercase tracking-widest bg-accent/15 px-2 py-0.5 rounded">
+                <span className="text-[8px] font-mono text-[#ffffff] font-bold uppercase tracking-widest bg-accent px-2 py-0.5 rounded">
                   Database Core
                 </span>
               </div>
@@ -385,7 +385,7 @@ export default function InteractiveTimeline() {
                 <div className="p-4 rounded-2xl bg-[#6366f1] border border-white/10 text-white shadow-xl flex items-center justify-center backdrop-blur-md bg-opacity-80">
                   <Monitor className="h-7 w-7" />
                 </div>
-                <span className="text-[8px] font-mono text-[#6366f1] font-bold uppercase tracking-widest bg-[#6366f1]/15 px-2 py-0.5 rounded">
+                <span className="text-[8px] font-mono text-[#ffffff] font-bold uppercase tracking-widest bg-[#6366f1] px-2 py-0.5 rounded">
                   UI Screen
                 </span>
               </div>
@@ -401,7 +401,7 @@ export default function InteractiveTimeline() {
                 <div className="p-4 rounded-2xl bg-[#ec4899] text-white shadow-xl shadow-[#ec4899]/20 flex items-center justify-center">
                   <Cpu className="h-7 w-7" />
                 </div>
-                <span className="text-[8px] font-mono text-[#ec4899] font-bold uppercase tracking-widest bg-[#ec4899]/15 px-2 py-0.5 rounded">
+                <span className="text-[8px] font-mono text-[#ffffff] font-bold uppercase tracking-widest bg-[#ec4899] px-2 py-0.5 rounded">
                   API Logic
                 </span>
               </div>
@@ -431,7 +431,7 @@ export default function InteractiveTimeline() {
                 <div className="p-4 rounded-full bg-[#3b82f6] text-white shadow-xl shadow-[#3b82f6]/20 flex items-center justify-center animate-bounce">
                   <Cloud className="h-7 w-7" />
                 </div>
-                <span className="text-[8px] font-mono text-[#3b82f6] font-bold uppercase tracking-widest bg-[#3b82f6]/15 px-2 py-0.5 rounded">
+                <span className="text-[8px] font-mono text-[#ffffff] font-bold uppercase tracking-widest bg-[#3b82f6] px-2 py-0.5 mb-5 rounded">
                   Edge Node
                 </span>
               </div>

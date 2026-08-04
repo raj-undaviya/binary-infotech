@@ -12,6 +12,7 @@ import {
   Settings,
   Wrench
 } from "lucide-react";
+import HostingerMailWidget from "@/components/HostingerMailWidget";
 
 export const metadata = {
   title: "Admin Dashboard | Binary Infotech",
@@ -48,21 +49,22 @@ export default async function AdminLayout({
       <aside className="w-full md:w-64 h-auto md:h-full bg-surface/85 backdrop-blur-md border-b md:border-b-0 md:border-r border-border p-6 flex flex-col relative z-10 overflow-y-auto shrink-0">
         
         {/* Sidebar Brand Header */}
-        <div className="flex items-center gap-2.5 mb-8">
+        <div className="flex items-center justify-center">
           <img
-            src="/icon.png"
+            src="/logo_with_wattermark.png"
             alt="Binary Infotech Logo"
-            className="h-6 w-auto"
+            className="h-10 w-auto"
           />
-          <div className="flex flex-col">
+          {/* <div className="flex flex-col">
             <span className="text-sm font-extrabold text-foreground tracking-tight leading-none">
-              Binary <span className="text-accent font-extrabold">Infotech</span>
-            </span>
-            <span className="text-[8px] uppercase tracking-widest text-muted font-extrabold mt-1">
+            Binary <span className="text-accent font-extrabold">Infotech</span>
+            </span> */}
+            {/* <span className="text-[8px] uppercase tracking-widest text-muted font-extrabold mt-1">
               Admin Portal
-            </span>
-          </div>
+              </span> */}
+          {/* </div> */}
         </div>
+        <div className="border-t border-border my-6" />
 
         {/* Navigation links */}
         <nav className="space-y-1.5 flex-grow">
@@ -101,6 +103,8 @@ export default async function AdminLayout({
             <Settings className="h-4 w-4 text-accent" />
             Site Settings
           </Link>
+
+          <HostingerMailWidget />
           
           <div className="border-t border-border my-6" />
 

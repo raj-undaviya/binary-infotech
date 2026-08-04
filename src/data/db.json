@@ -143,24 +143,6 @@
       "message": "Hi Binary Infotech team! We are launching an e-commerce clothing app and need cross-platform app developers using React Native. Do you have portfolios of previous apps you can share?",
       "date": "2026-07-28T14:15:00.000Z",
       "read": true
-    },
-    {
-      "name": "Test User",
-      "email": "testuser@yopmail.com",
-      "subject": "About project collabration",
-      "message": "Hello therre this is the test message for project collabration for my company and I want to make the project like your filenova will you please help me and send the estimation for it ?\r\n",
-      "id": "contact-1785874324802",
-      "date": "2026-08-04T20:12:04.802Z",
-      "read": true
-    },
-    {
-      "name": "Test User 2",
-      "email": "testuser1@yopmail.com",
-      "subject": "Test",
-      "message": "Test",
-      "id": "contact-1785875397068",
-      "date": "2026-08-04T20:29:57.068Z",
-      "read": true
     }
   ],
   "settings": {

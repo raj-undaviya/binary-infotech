@@ -15,6 +15,7 @@ import {
   SiteSettings
 } from "@/lib/db";
 import { revalidatePath } from "next/cache";
+import nodemailer from "nodemailer";
 
 // Admin Authentication Configuration (fallback defaults if .env.local isn't set)
 const ADMIN_USER = process.env.ADMIN_USERNAME || "admin";
@@ -45,6 +46,49 @@ export async function submitContactForm(prevState: any, formData: FormData) {
       subject,
       message
     });
+
+    // Send email notification to Hostinger mailbox if password is configured
+    const hostingerEmail = process.env.HOSTINGER_EMAIL || "info@binaries.org.in";
+    const hostingerPassword = process.env.HOSTINGER_PASSWORD;
+
+    if (hostingerPassword) {
+      try {
+        const transporter = nodemailer.createTransport({
+          host: "smtp.hostinger.com",
+          port: 465,
+          secure: true,
+          auth: {
+            user: hostingerEmail,
+            pass: hostingerPassword
+          }
+        });
+
+        const mailContent = `You have received a new contact form inquiry from your website:
+
+Name: ${name}
+Email: ${email}
+Subject: ${subject}
+Date: ${new Date().toLocaleString()}
+
+Message:
+${message}`;
+
+        await transporter.sendMail({
+          from: `"Website Contact Form" <${hostingerEmail}>`,
+          to: hostingerEmail,
+          subject: `New Inquiry: ${subject}`,
+          text: mailContent,
+          replyTo: email
+        });
+        
+        console.log(`Successfully dispatched SMTP email notification for inquiry from ${email}`);
+      } catch (smtpErr) {
+        console.error("Failed to send contact SMTP email notification:", smtpErr);
+        // Do not return error, let page save succeed
+      }
+    } else {
+      console.warn("HOSTINGER_PASSWORD not set in .env, skipping outbound SMTP notification email");
+    }
 
     // Revalidate paths so the admin panel updates its message counters immediately
     revalidatePath("/admin/dashboard");

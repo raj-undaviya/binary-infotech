@@ -1,14 +1,12 @@
 import { NextResponse } from "next/server";
 import { ImapFlow } from "imapflow";
+import { simpleParser } from "mailparser";
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const email = process.env.HOSTINGER_EMAIL;
+  const email = process.env.HOSTINGER_EMAIL || "info@binaries.org.in";
   const password = process.env.HOSTINGER_PASSWORD;
-  console.log("email", email);
-  console.log("password", password);
-  
 
   if (!password) {
     return NextResponse.json({
@@ -39,24 +37,33 @@ export async function GET() {
     const unseenEmails: any[] = [];
     
     try {
-      // Find unseen (un-seen) emails using seen: false
+      // Find unseen (un-read) emails using seen: false
       const messages = await client.search({ seen: false });
       
       if (messages && Array.isArray(messages)) {
         count = messages.length;
         
-        // Fetch details of the latest 5 unseen messages
+        // Fetch details of the latest 10 unseen messages
         if (count > 0) {
-          const latestIds = messages.slice(-5).reverse();
+          const latestIds = messages.slice(-10).reverse();
           for (const uid of latestIds) {
-            // Fetch envelope info
-            const message = await client.fetchOne(uid, { envelope: true });
-            if (message && message.envelope) {
+            // Fetch envelope and raw message source
+            const message = await client.fetchOne(uid, { envelope: true, source: true });
+            
+            if (message && message.source && message.envelope) {
+              // Parse raw email source to extract clean body text
+              const parsed = await simpleParser(message.source);
+              const bodyText = parsed.text || (parsed.html ? parsed.html.replace(/<[^>]*>/g, '') : "(No Message Content)");
+
               unseenEmails.push({
-                uid,
+                id: `hostinger-${uid}`, // unique ID for client merge
+                name: message.envelope.from?.map((f: any) => f.name || f.address.split('@')[0]).join(", ") || "Unknown Sender",
+                email: message.envelope.from?.map((f: any) => f.address).join(", ") || "",
                 subject: message.envelope.subject || "(No Subject)",
-                from: message.envelope.from?.map((f: any) => `${f.name || ""} <${f.address}>`).join(", ") || "(Unknown Sender)",
-                date: message.envelope.date ? message.envelope.date.toISOString() : new Date().toISOString()
+                message: bodyText.trim(),
+                date: message.envelope.date ? message.envelope.date.toISOString() : new Date().toISOString(),
+                read: false,
+                sourceType: "hostinger" // to differentiate in UI
               });
             }
           }

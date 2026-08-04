@@ -12,7 +12,6 @@ import {
   Settings,
   Wrench
 } from "lucide-react";
-import HostingerMailWidget from "@/components/HostingerMailWidget";
 
 export const metadata = {
   title: "Admin Dashboard | Binary Infotech",
@@ -103,8 +102,6 @@ export default async function AdminLayout({
             <Settings className="h-4 w-4 text-accent" />
             Site Settings
           </Link>
-
-          <HostingerMailWidget />
           
           <div className="border-t border-border my-6" />
 

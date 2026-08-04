@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { markContactReadState, deleteContactMessage } from "@/app/actions";
-import { ContactMessage } from "@/lib/db";
 import { 
   Check, 
   Mail, 
@@ -15,18 +14,36 @@ import {
   ChevronRight, 
   ShieldAlert,
   Send,
-  Loader2
+  Loader2,
+  Inbox
 } from "lucide-react";
 import Card from "./design-system/Card";
 import Button from "./design-system/Button";
 
-export default function AdminContactsInbox({ initialContacts }: { initialContacts: ContactMessage[] }) {
-  const [contacts, setContacts] = useState<ContactMessage[]>(initialContacts);
-  const [selectedId, setSelectedId] = useState<string | null>(
-    initialContacts.length > 0 ? initialContacts[0].id : null
-  );
-  const [searchQuery, setSearchQuery] = useState("");
+// Custom contact message interface supporting merged Hostinger emails
+interface ExtendedContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  date: string;
+  read: boolean;
+  sourceType?: "hostinger" | "website";
+}
+
+export default function AdminContactsInbox({ initialContacts }: { initialContacts: ExtendedContactMessage[] }) {
+  // Add sourceType: "website" to initial contacts
+  const websiteContacts = initialContacts.map(c => ({ ...c, sourceType: c.sourceType || "website" as const }));
   
+  const [contacts, setContacts] = useState<ExtendedContactMessage[]>(websiteContacts);
+  const [selectedId, setSelectedId] = useState<string | null>(
+    websiteContacts.length > 0 ? websiteContacts[0].id : null
+  );
+  
+  const [searchQuery, setSearchQuery] = useState("");
+  const [loadingEmails, setLoadingEmails] = useState(false);
+
   // Composer states
   const [replyText, setReplyText] = useState("");
   const [sending, setSending] = useState(false);
@@ -34,11 +51,47 @@ export default function AdminContactsInbox({ initialContacts }: { initialContact
 
   const selectedContact = contacts.find(c => c.id === selectedId);
 
-  // Clear/Reset composer states when contact changes
+  // Reset composer when contact selection changes
   useEffect(() => {
     setReplyText("");
     setReplyStatus(null);
   }, [selectedId]);
+
+  // Fetch Hostinger unread emails on mount and merge them into the feed
+  useEffect(() => {
+    async function fetchAndMergeEmails() {
+      try {
+        setLoadingEmails(true);
+        const res = await fetch("/api/admin/emails");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.status === "SUCCESS" && data.emails && data.emails.length > 0) {
+            setContacts(prev => {
+              // Retain only website contacts to prevent duplicate Hostinger email appends
+              const dbContacts = prev.filter(c => c.sourceType !== "hostinger");
+              const combined = [...dbContacts, ...data.emails];
+              
+              // Sort unified messages by date descending
+              return combined.sort(
+                (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+              );
+            });
+            
+            // Auto-select first message of the merged list if none selected
+            if (data.emails.length > 0 && !selectedId) {
+              setSelectedId(data.emails[0].id);
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load Hostinger emails:", err);
+      } finally {
+        setLoadingEmails(false);
+      }
+    }
+
+    fetchAndMergeEmails();
+  }, []);
 
   const filteredContacts = contacts.filter((c) => {
     return (
@@ -50,6 +103,18 @@ export default function AdminContactsInbox({ initialContacts }: { initialContact
   });
 
   async function handleToggleRead(id: string, currentRead: boolean) {
+    const contact = contacts.find(c => c.id === id);
+    if (!contact) return;
+
+    if (contact.sourceType === "hostinger") {
+      // For Hostinger emails, we mark as read locally inside state
+      setContacts(prev =>
+        prev.map(c => (c.id === id ? { ...c, read: !currentRead } : c))
+      );
+      return;
+    }
+
+    // For website form database contacts, trigger action
     const success = await markContactReadState(id, !currentRead);
     if (success) {
       setContacts(prev =>
@@ -59,6 +124,9 @@ export default function AdminContactsInbox({ initialContacts }: { initialContact
   }
 
   async function handleDelete(id: string) {
+    const contact = contacts.find(c => c.id === id);
+    if (!contact || contact.sourceType === "hostinger") return;
+
     if (confirm("Are you sure you want to delete this message?")) {
       const success = await deleteContactMessage(id);
       if (success) {
@@ -99,7 +167,7 @@ export default function AdminContactsInbox({ initialContacts }: { initialContact
         });
         setReplyText("");
         
-        // Automatically mark as read if not already read
+        // Auto-mark read status when replied
         if (!selectedContact.read) {
           handleToggleRead(selectedContact.id, false);
         }
@@ -120,24 +188,27 @@ export default function AdminContactsInbox({ initialContacts }: { initialContact
   }
 
   return (
-    <Card variant="default" className="bg-surface/50 border border-border/80 rounded-3xl overflow-hidden shadow-sm h-[calc(100vh-140px)] flex flex-col">
+    <Card variant="default" className="bg-surface/50 border border-border/80 rounded-3xl overflow-hidden shadow-sm h-[calc(100vh-160px)] flex flex-col">
       <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
         
         {/* Left Side: Messages list column */}
         <div className="w-full md:w-2/5 border-b md:border-b-0 md:border-r border-border/60 flex flex-col h-1/2 md:h-full bg-background/25">
           
-          {/* Search Header */}
-          <div className="p-4 border-b border-border/60">
-            <div className="relative">
+          {/* Search & Loader Header */}
+          <div className="p-4 border-b border-border/60 flex items-center gap-3">
+            <div className="relative flex-grow">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted h-4 w-4 pointer-events-none" />
               <input
                 type="text"
-                placeholder="Search messages..."
+                placeholder="Search unified inbox..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-background border border-border rounded-xl pl-10 pr-4 py-2 text-foreground text-xs focus:outline-none focus:border-accent transition-colors"
               />
             </div>
+            {loadingEmails && (
+              <Loader2 className="h-4.5 w-4.5 animate-spin text-accent flex-shrink-0" />
+            )}
           </div>
 
           {/* List Wrapper */}
@@ -145,6 +216,7 @@ export default function AdminContactsInbox({ initialContacts }: { initialContact
             {filteredContacts.length > 0 ? (
               filteredContacts.map((contact) => {
                 const isSelected = contact.id === selectedId;
+                const isHostinger = contact.sourceType === "hostinger";
                 return (
                   <button
                     key={contact.id}
@@ -155,16 +227,28 @@ export default function AdminContactsInbox({ initialContacts }: { initialContact
                         : "hover:bg-surface/60"
                     }`}
                   >
-                    {/* Active accent vertical bar */}
+                    {/* Active bar decoration */}
                     {isSelected && (
                       <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-accent" />
                     )}
 
-                    <div className="flex items-center justify-between text-[10px] text-muted font-bold uppercase tracking-wider">
+                    <div className="flex items-center justify-between text-[9px] text-muted font-bold uppercase tracking-wider">
                       <span>{new Date(contact.date).toLocaleDateString()}</span>
-                      {!contact.read && (
-                        <span className="h-2 w-2 rounded-full bg-accent animate-pulse" />
-                      )}
+                      
+                      <div className="flex items-center gap-2">
+                        {isHostinger ? (
+                          <span className="px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-500 font-extrabold tracking-wider text-[8px] border border-blue-500/20">
+                            Hostinger Mail
+                          </span>
+                        ) : (
+                          <span className="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500 font-extrabold tracking-wider text-[8px] border border-emerald-500/20">
+                            Website Form
+                          </span>
+                        )}
+                        {!contact.read && (
+                          <span className="h-2 w-2 rounded-full bg-accent animate-pulse" />
+                        )}
+                      </div>
                     </div>
 
                     <h3 className={`text-xs font-bold text-foreground line-clamp-1 ${!contact.read ? "font-extrabold" : ""}`}>
@@ -208,8 +292,9 @@ export default function AdminContactsInbox({ initialContacts }: { initialContact
                 </button>
                 <button
                   onClick={() => handleDelete(selectedContact.id)}
-                  title="Delete message"
-                  className="p-2 rounded-lg border border-border text-red-500 hover:text-red-600 hover:bg-red-500/10 transition-colors cursor-pointer"
+                  disabled={selectedContact.sourceType === "hostinger"}
+                  title={selectedContact.sourceType === "hostinger" ? "Delete not supported for Hostinger emails" : "Delete message"}
+                  className="p-2 rounded-lg border border-border text-red-500 hover:text-red-600 hover:bg-red-500/10 transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -222,10 +307,21 @@ export default function AdminContactsInbox({ initialContacts }: { initialContact
                 <h2 className="text-base sm:text-lg font-extrabold text-foreground mb-2 leading-tight">
                   {selectedContact.subject}
                 </h2>
+                
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-border/40 pb-4 text-[10px] sm:text-xs text-muted font-semibold">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="font-extrabold text-foreground">{selectedContact.name}</span>
                     <span>&lt;{selectedContact.email}&gt;</span>
+                    
+                    {selectedContact.sourceType === "hostinger" ? (
+                      <span className="px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-500 font-extrabold tracking-wider text-[8px]">
+                        Hostinger Mail Inbox
+                      </span>
+                    ) : (
+                      <span className="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500 font-extrabold tracking-wider text-[8px]">
+                        Website Contact Form
+                      </span>
+                    )}
                   </div>
                   <span>Received {new Date(selectedContact.date).toLocaleString()}</span>
                 </div>
@@ -272,7 +368,6 @@ export default function AdminContactsInbox({ initialContacts }: { initialContact
                     </p>
                     
                     <div className="flex items-center gap-3 self-end sm:self-auto">
-                      {/* Fallback mailto button */}
                       <a
                         href={`mailto:${selectedContact.email}?subject=Re: ${selectedContact.subject}&body=${encodeURIComponent(replyText)}`}
                         className="px-3.5 py-2.5 rounded-xl border border-border text-[10px] font-extrabold text-muted hover:text-foreground hover:bg-surface transition-colors cursor-pointer uppercase tracking-wider"

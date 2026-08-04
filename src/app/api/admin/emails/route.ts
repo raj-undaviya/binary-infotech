@@ -64,10 +64,19 @@ export async function GET() {
               // Determine if mail has been read (has the \Seen flag)
               const isRead = message.flags ? message.flags.has('\\Seen') : false;
 
+              // Parse Reply-To header to handle contact form notifications correctly
+              const replyToObj = message.envelope.replyTo?.[0];
+              const useReplyTo = !!(replyToObj && replyToObj.address && replyToObj.address.toLowerCase() !== email.toLowerCase());
+              
+              const senderEmail = useReplyTo ? (replyToObj.address as string) : (message.envelope.from?.map((f: any) => f.address).join(", ") || "");
+              const senderName = useReplyTo 
+                ? (replyToObj.name || (replyToObj.address as string).split('@')[0]) 
+                : (message.envelope.from?.map((f: any) => f.name || f.address.split('@')[0]).join(", ") || "Unknown Sender");
+
               inboxEmails.push({
                 id: `hostinger-${uid}`, // unique ID for merging
-                name: message.envelope.from?.map((f: any) => f.name || f.address.split('@')[0]).join(", ") || "Unknown Sender",
-                email: message.envelope.from?.map((f: any) => f.address).join(", ") || "",
+                name: senderName,
+                email: senderEmail,
                 subject: message.envelope.subject || "(No Subject)",
                 message: bodyText.trim(),
                 date: message.envelope.date ? message.envelope.date.toISOString() : new Date().toISOString(),

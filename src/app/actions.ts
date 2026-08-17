@@ -18,8 +18,8 @@ import { revalidatePath } from "next/cache";
 import nodemailer from "nodemailer";
 
 // Admin Authentication Configuration (fallback defaults if .env.local isn't set)
-const ADMIN_USER = process.env.ADMIN_USERNAME || "admin";
-const ADMIN_PASS = process.env.ADMIN_PASSWORD || "admin123";
+const ADMIN_USER = process.env.ADMIN_USERNAME
+const ADMIN_PASS = process.env.ADMIN_PASSWORD
 const SESSION_COOKIE_NAME = "binary_admin_session";
 
 // Server action to handle public contact form submissions
@@ -48,7 +48,7 @@ export async function submitContactForm(prevState: any, formData: FormData) {
     });
 
     // Send email notification to Hostinger mailbox if password is configured
-    const hostingerEmail = process.env.HOSTINGER_EMAIL || "info@binaries.org.in";
+    const hostingerEmail = process.env.HOSTINGER_EMAIL;
     const hostingerPassword = process.env.HOSTINGER_PASSWORD;
 
     if (hostingerPassword) {

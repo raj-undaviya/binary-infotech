@@ -18,8 +18,8 @@ import { revalidatePath } from "next/cache";
 import nodemailer from "nodemailer";
 
 // Admin Authentication Configuration (fallback defaults if .env.local isn't set)
-const ADMIN_USER = process.env.ADMIN_USERNAME
-const ADMIN_PASS = process.env.ADMIN_PASSWORD
+const ADMIN_USER = process.env.ADMIN_USER || "Binary.Infotech.admin"
+const ADMIN_PASS = process.env.ADMIN_PASSWORD || "Binary.Infotech@2024"
 const SESSION_COOKIE_NAME = "binary_admin_session";
 
 // Server action to handle public contact form submissions

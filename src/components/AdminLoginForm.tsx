@@ -107,10 +107,10 @@ export default function AdminLoginForm() {
       </form>
 
       {/* Tip Banner */}
-      <div className="mt-8 p-4 rounded-xl bg-accent/5 border border-accent/15 text-[11px] text-muted leading-relaxed text-center font-medium">
+      {/* <div className="mt-8 p-4 rounded-xl bg-accent/5 border border-accent/15 text-[11px] text-muted leading-relaxed text-center font-medium">
         <span className="font-bold text-accent block mb-1">Development Mode Credentials:</span>
         Use <code className="text-foreground font-mono bg-background border border-border px-1 py-0.5 rounded">admin</code> / <code className="text-foreground font-mono bg-background border border-border px-1 py-0.5 rounded">admin123</code> to authenticate.
-      </div>
+      </div> */}
     </Card>
   );
 }

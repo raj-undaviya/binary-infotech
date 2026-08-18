@@ -214,7 +214,7 @@ export async function getSettings(): Promise<SiteSettings> {
     db.settings = {
       siteTitle: "Binary Infotech",
       siteTagline: "Engineering Digital Excellence",
-      contactEmail: "info@binaries.org.in",
+      contactEmail: "binarytechinfo@gmail.com",
       contactPhone: "+91 90999 76868",
       contactAddress: "402, SNS Platina, Vesu, Surat, Gujarat - 395007",
       socialLinkedin: "https://linkedin.com/company/binary-infotech",

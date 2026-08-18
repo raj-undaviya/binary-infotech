@@ -9,7 +9,7 @@
       "date": "2025-12-12",
       "category": "Digital Marketing",
       "author": "Admin",
-      "views": 251
+      "views": 252
     },
     {
       "id": "post-2",
@@ -20,7 +20,7 @@
       "date": "2025-12-10",
       "category": "Mobile App Development",
       "author": "Admin",
-      "views": 191
+      "views": 192
     },
     {
       "id": "post-3",
@@ -31,7 +31,7 @@
       "date": "2025-12-08",
       "category": "Web Design Services",
       "author": "Admin",
-      "views": 312
+      "views": 313
     },
     {
       "id": "post-4",
@@ -139,7 +139,7 @@
   "settings": {
     "siteTitle": "Binary Infotech",
     "siteTagline": "Engineering Digital Excellence",
-    "contactEmail": "info@binaries.org.in",
+    "contactEmail": "binarytechinfo@gmail.com",
     "contactPhone": "+91 94082 56543",
     "contactAddress": "247, Exxoniic mall, Opp. Privillage restuarant, Isckon temple road, Jahangirpura, Surat, Gujarat - 395007",
     "socialLinkedin": "https://linkedin.com/company/binary-infotech",

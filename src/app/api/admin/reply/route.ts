@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     }
 
     const cleanTo = to.trim();
-    const email = process.env.HOSTINGER_EMAIL || "binarytechinfo@gmail.com";
+    const email = process.env.HOSTINGER_EMAIL || "info@binaries.org.in";
     const password = process.env.HOSTINGER_PASSWORD;
 
     if (!password) {
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
       port: 465,
       secure: true,
       auth: {
-        user: email || "binarytechinfo@gmail.com",
+        user: email || "info@binaries.org.in",
         pass: password as string
       },
       connectionTimeout: 10000,

@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 
 // GET: Fetch recent emails (both read & unread)
 export async function GET() {
-  const email = process.env.HOSTINGER_EMAIL || "binarytechinfo@gmail.com";
+  const email = process.env.HOSTINGER_EMAIL || "info@binaries.org.in";
   const password = process.env.HOSTINGER_PASSWORD;
 
   if (!password) {
@@ -23,7 +23,7 @@ export async function GET() {
     port: 993,
     secure: true,
     auth: {
-      user: email || "binarytechinfo@gmail.com",
+      user: email || "info@binaries.org.in",
       pass: password as string
     },
     logger: false
@@ -119,7 +119,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: "Invalid Hostinger message ID" }, { status: 400 });
     }
 
-    const email = process.env.HOSTINGER_EMAIL || "binarytechinfo@gmail.com";
+    const email = process.env.HOSTINGER_EMAIL || "info@binaries.org.in";
     const password = process.env.HOSTINGER_PASSWORD;
 
     if (!password) {
@@ -136,7 +136,7 @@ export async function POST(req: Request) {
       port: 993,
       secure: true,
       auth: {
-        user: email || "binarytechinfo@gmail.com",
+        user: email || "info@binaries.org.in",
         pass: password as string
       },
       logger: false

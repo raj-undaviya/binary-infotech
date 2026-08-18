@@ -130,7 +130,7 @@ export default function AdminSettingsForm({ initialSettings }: { initialSettings
               required
               value={formData.contactEmail}
               onChange={(e) => setFormData(prev => ({ ...prev, contactEmail: e.target.value }))}
-              placeholder="e.g. binarytechinfo@gmail.com"
+              placeholder="e.g. info@binaries.org.in"
               className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-foreground text-xs focus:outline-none focus:border-accent transition-colors"
             />
           </div>
